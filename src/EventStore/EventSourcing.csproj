@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Leira.EventSourcing</RootNamespace>
+    <AssemblyName>EventSourcing</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Leira.CosmosDb" Version="1.0.2" />
+  </ItemGroup>
+
+</Project>
