@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
-namespace EventStore
+namespace Leira.EventSourcing
 {
     public class EventStoreClient<TError> where TError : struct
     {

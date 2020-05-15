@@ -4,6 +4,18 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Leira.EventSourcing</RootNamespace>
     <AssemblyName>EventSourcing</AssemblyName>
+    <PackageId>Leira.EventSourcing</PackageId>
+    <Version>1.0.3.0</Version>
+    <Authors>Adel Alzubeir</Authors>
+    <Company>LEİRA BİLİŞİM TİCARET LİMİTED ŞİRKETİ</Company>
+    <Product>Leira.EventSourcing</Product>
+    <Description>Strongly typed event sourcing framework that uses CosmosDb as a datastore with strong consistency and resiliency.</Description>
+    <Copyright>2020 LEİRA BİLİŞİM TİCARET LİMİTED ŞİRKETİ</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/leiratech/Event-Sourcing-Core</PackageProjectUrl>
+    <PackageTags>EventSourcing;CQRS;CosmosDb;DocumentDb;Events;Commands;Snapshots;Strong Consistency</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
