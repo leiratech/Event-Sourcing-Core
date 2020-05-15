@@ -145,8 +145,8 @@ In any place where the EventStoreClient is injected.
 var user1 = await eventStoreClient.GetOrCreateAggregateAsync<User>("User1", ConsistencyRestriction.Loose).ConfigureAwait(false);
 // Additionally, you can pass any additional parameters to the constructor by passing the "params object[] customParameters". If your Custom Parameters in the constructor are injected using dependency injection, the framework will automatically load them. Remember to ONLY inject Singletons. The aggregate is a long living object and injecting Transeint or Scoped may result in problems.
 // Now we got the signal from the user to signup. Let's sign them up.
-
-var result = await user1.ExecuteCommandAsync(new SignupUser()
+// Be careful not to use ExecuteCommandAsync which is your method, this will not run anything (as i did in a previous version of this documentation).
+var result = await user1.ExecuteAsync(new SignupUser()
   {
       Name = objectFromFrontend.Name,
       IpAddress = objectFromFrontend.IpAddress,
