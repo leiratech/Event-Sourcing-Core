@@ -1,13 +1,20 @@
-﻿using Leira.EventSourcing.Interfaces;
-using System;
+﻿using Leira.EventSourcing.Abstracts;
+using Leira.EventSourcing.Enums;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Leira.EventSourcing
 {
     public class CommandResult<TError>
     {
-        public TError Error { get; set; }
-        public IEnumerable<IEvent> Events { get; set; }
+        public TError CommandError { get; set; }
+        public IEnumerable<Event> Events { get; set; }
+        public Error EventSourcingError { get; internal set; }
+        public CommandResult(TError error, params Event[] events )
+        {
+            CommandError = error;
+            Events = events;
+        }
+
+
     }
 }
