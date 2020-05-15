@@ -129,10 +129,10 @@ public class User : Aggregate<Error>,
 ```
 
 ### Linking Things Together
-Now that all of our classes are setup, we can use our aggregate. It is recommended that you use dependency injection and configure.
+Now that all of our classes are setup, we can use our aggregate. It is recommended that you use dependency injection and configure it Singleton by using 'services.AddSingleton()' in order to achieve maximum performance.
 First we need the EventStoreClient<TError>, when your application is first run, it will automatically create all the necessary collections and databases (1 database and 3 collections, using 400 RU/S shared).
  
- If you want to create the Database and Collections yourself, you MUST add "sequenceNumber" as a unique constraint in the events Collection ONLY.
+If you want to create the Database and Collections yourself, you MUST add 'sequenceNumber' as a unique key in the 'events' Collection ONLY.
 
 In *startup.cs*, add the following.
 ``` c#
