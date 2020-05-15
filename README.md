@@ -97,7 +97,8 @@ public class User : Aggregate<Error>,
     public DateTime SignupTime { get; set; }
     public string Country { get; set; }
     public bool ProfileSet { get; set; }
-
+    
+    // This will be called by the framework. Don't call it your self unless you are simulating execution without persisting in the database.
     public async Task<CommandResult<Error>> ExecuteCommandAsync(SignupUser command)
     {
         if (this.ProfileSet)
@@ -116,7 +117,8 @@ public class User : Aggregate<Error>,
         }) ;
 
     }
-
+    
+    // This will be called by the framework. Don't call it your self unless you are simulating execution without persisting in the database.    
     public async Task ApplyEventAsync(UserSignedup @event)
     {
         // Here we simply apply the changes.
