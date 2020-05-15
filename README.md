@@ -1,3 +1,6 @@
+[![#](https://img.shields.io/nuget/v/Leira.EventSourcing.svg?style=flat-square)](https://www.nuget.org/packages/Leira.EventSourcing)
+![#](https://img.shields.io/github/license/leiratech/CosmosDb-Extendability?style=flat-square)
+
 # Leira.EventStore
 Strongly typed event sourcing framework that useses CosmosDb as a datastore with strong consistency and resiliency.
 
