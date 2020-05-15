@@ -70,7 +70,7 @@ namespace Leira.EventSourcing.Abstracts
                 {
                     @event.CommandId = command.Id;
                     @event.Time = command.Time;
-                    var res = await ((Task<Error>)this.GetType().GetMethod(nameof(ApplyAndPersistEventAsync)).Invoke(this, new object[] { @event })).ConfigureAwait(false); //.MakeGenericMethod(@event.GetType())
+                    var res = await ((Task<Error>)this.GetType().GetMethod(nameof(ApplyAndPersistEventAsync), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { @event })).ConfigureAwait(false); //.MakeGenericMethod(@event.GetType())
 
                     if (res == Error.ConsistencyConflict)
                     {
@@ -79,6 +79,9 @@ namespace Leira.EventSourcing.Abstracts
                         {
                             await ReverseEventAsync(appliedEvent).ConfigureAwait(false);
                         }
+                        await LoadSnapshotAsync().ConfigureAwait(false);
+                        await RehydrateAsync().ConfigureAwait(false);
+                        await SnapshotAsync().ConfigureAwait(false);
                         return new CommandResult<TError>(result.CommandError, null) { EventSourcingError = res };
                     }
                     else if (res == Error.None)
@@ -87,6 +90,7 @@ namespace Leira.EventSourcing.Abstracts
                         appliedEvents.Add(@event);
                     }
                 }
+                await SnapshotAsync().ConfigureAwait(false);
 
                 // Persist Command
                 if (command.Id != default && commandsContainer != null)
@@ -103,6 +107,9 @@ namespace Leira.EventSourcing.Abstracts
                             await ReverseEventAsync(@event).ConfigureAwait(false);
                         }
 
+                        await LoadSnapshotAsync().ConfigureAwait(false);
+                        await RehydrateAsync().ConfigureAwait(false);
+                        await SnapshotAsync().ConfigureAwait(false);
                         return new CommandResult<TError>(result.CommandError, result.Events.ToArray()) { EventSourcingError = Error.IdempotencyFailure };
                     }
                 }
@@ -119,7 +126,7 @@ namespace Leira.EventSourcing.Abstracts
             var result = await eventsContainer.UpsertItemViaStreamAsync(@event, true).ConfigureAwait(false);
         }
 
-        public async Task<Error> ApplyAndPersistEventAsync(Event @event)
+        private async Task<Error> ApplyAndPersistEventAsync(Event @event)
         {
             @event.SequenceNumber = ++LastAppliedEventNumber;
             await ((Task)this.GetType().BaseType.GetMethod(nameof(ApplyEventAsync), BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(@event.GetType()).Invoke(this, new object[] { @event })).ConfigureAwait(false);
@@ -197,7 +204,6 @@ namespace Leira.EventSourcing.Abstracts
             {
                 return false;
             }
-            await SnapshotAsync().ConfigureAwait(false);
             return true;
         }
 
