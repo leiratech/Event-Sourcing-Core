@@ -1,5 +1,5 @@
 [![#](https://img.shields.io/nuget/v/Leira.EventSourcing.svg?style=flat-square)](https://www.nuget.org/packages/Leira.EventSourcing)
-![#](https://img.shields.io/github/license/leiratech/CosmosDb-Extendability?style=flat-square)
+![#](https://img.shields.io/github/license/leiratech/Event-Sourcing-Core?style=flat-square)
 
 # Leira.EventStore
 Strongly typed event sourcing framework that useses CosmosDb as a datastore with strong consistency and resiliency.
@@ -45,6 +45,7 @@ public enum Error
 
 ### Create the Aggregate
 The User aggregate must inherit from Aggregate, which means you have to also initialize the constructor. This is simple, everything is done using dependency injection and you don't have to pass those parameters. In reality, you don't even have to create an instance of your Aggregate as it will be created for you. If you need additional parameters in the constructor, add them, we will explain this in details further below.
+Notice that string Id is inherited from `Aggregate<TError>` so you don't have to add that. Add all your other properties.
 ``` c#
  public class User : Aggregate<Error>
     {
@@ -61,6 +62,7 @@ The User aggregate must inherit from Aggregate, which means you have to also ini
 ```
 
 ### Create the Command
+The command **MUST** inherit from `Leira.EventSourcing.Abstracts.Command`.
 ``` c#
 public class SignupUser : Command
 {
@@ -71,6 +73,7 @@ public class SignupUser : Command
 ```
 
 ### Create the Event
+The event **MUST** inherit from `Leira.EventSourcing.Abstracts.Event`.
 ``` c#
 public class UserSignedup : Event
 {
@@ -82,6 +85,9 @@ public class UserSignedup : Event
 ```
 
 ### Expand the aggregate
+Here, we need to tell the aggregate what Commands it accepts, and how to handle Events. 
+To make the Aggregate accept a command, Implment the interface `IAsyncComandExecutor<TCommand, TError>` or `IComandExecutor<TCommand, TError>` depending on your need.
+To make the Aggregate handle an event, implment the interface `IAsyncEventHandler<TEvent>` or `IAsyncEventHandler<TEvent>` depending on your need.
 ``` c#
 public class User : Aggregate<Error>,
                     IAsyncCommandExecutor<SignupUser, Error>,
