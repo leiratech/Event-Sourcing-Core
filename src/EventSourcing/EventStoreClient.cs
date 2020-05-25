@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Leira.EventSourcing
 {
-    public class EventStoreClient<TError> where TError : struct
+    public sealed class EventStoreClient<TError> : IDisposable where TError : struct
     {
         private readonly IServiceProvider serviceProvider;
         private readonly ConfigurationOptions configurationOptions;
-        MemoryCache aggregatesCache;
+        private readonly MemoryCache aggregatesCache;
         private readonly bool cacheEnabled;
         private readonly ExtendedCosmosClient extendedCosmosClient;
 
@@ -81,6 +81,9 @@ namespace Leira.EventSourcing
             return instance;
         }
 
-
+        public void Dispose()
+        {
+            aggregatesCache.Dispose();
+        }
     }
 }

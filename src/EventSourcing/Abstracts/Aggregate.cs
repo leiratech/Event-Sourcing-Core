@@ -79,7 +79,9 @@ namespace Leira.EventSourcing.Abstracts
                 {
                     @event.CommandId = command.Id;
                     @event.Time = command.Time;
-                    var res = await ((Task<Error>)this.GetType().GetMethod(nameof(ApplyAndPersistEventAsync), BindingFlags.NonPublic | BindingFlags.Instance).Invoke(this, new object[] { @event })).ConfigureAwait(false); //.MakeGenericMethod(@event.GetType())
+
+                    var method = this.GetType().GetMethodsThroughHierarchy().Where(m => m.Name == nameof(ApplyAndPersistEventAsync)).Single();
+                    var res = await ((Task<Error>)method.Invoke(this, new object[] { @event })).ConfigureAwait(false);
 
                     if (res == Error.ConsistencyConflict)
                     {
@@ -138,7 +140,8 @@ namespace Leira.EventSourcing.Abstracts
         private async Task<Error> ApplyAndPersistEventAsync(Event @event)
         {
             @event.SequenceNumber = ++LastAppliedEventNumber;
-            await ((Task)this.GetType().BaseType.GetMethod(nameof(ApplyEventAsync), BindingFlags.NonPublic | BindingFlags.Instance).MakeGenericMethod(@event.GetType()).Invoke(this, new object[] { @event })).ConfigureAwait(false);
+            await ((Task)this.GetType().GetMethodsThroughHierarchy().Where(m=>m.Name == nameof(ApplyEventAsync)).Single().MakeGenericMethod(@event.GetType()).Invoke(this, new object[] { @event })).ConfigureAwait(false);
+
             int millisecondsToWaitOnFailure = 200;
             bool eventStorageStatus;
             @event.Id = Guid.NewGuid().ToString();
@@ -178,6 +181,7 @@ namespace Leira.EventSourcing.Abstracts
         {
             if (!@event.IsReversed)
             {
+               
                 if (this is IAsyncEventHandler<TEvent> asyncEventHandler)
                 {
                     await asyncEventHandler.ApplyEventAsync(@event).ConfigureAwait(false);
@@ -205,7 +209,7 @@ namespace Leira.EventSourcing.Abstracts
 
             foreach (var @event in results)
             {
-                var method = this.GetType().BaseType.GetMethod(nameof(ApplyEventAsync), System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).MakeGenericMethod(Type.GetType(@event.GetValue("$type").ToString()));
+                var method = this.GetType().GetMethodsThroughHierarchy().Where(m=>m.Name == nameof(ApplyEventAsync)).Single().MakeGenericMethod(Type.GetType(@event.GetValue("$type").ToString()));
                 await ((Task)method.Invoke(this, new object[] { @event.ToObject(Type.GetType(@event.GetValue("$type").ToString())) })).ConfigureAwait(false);
             }
 
@@ -259,5 +263,7 @@ namespace Leira.EventSourcing.Abstracts
                 }
             } while (result.StatusCode != HttpStatusCode.OK && result.StatusCode != HttpStatusCode.Created);
         }
+
+        
     }
 }
