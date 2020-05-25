@@ -86,8 +86,8 @@ public class UserSignedup : Event
 
 ### Expand the aggregate
 Here, we need to tell the aggregate what Commands it accepts, and how to handle Events. 
-To make the Aggregate accept a command, Implment the interface `IAsyncComandExecutor<TCommand, TError>`.
-To make the Aggregate handle an event, implment the interface `IAsyncEventHandler<TEvent>`.
+To make the Aggregate accept a command, Implment the interface `IAsyncComandExecutor<TCommand, TError>` or `IComandExecutor<TCommand, TError>` depending on your need.
+To make the Aggregate handle an event, implment the interface `IAsyncEventHandler<TEvent>` or `IAsyncEventHandler<TEvent>` depending on your need.
 ``` c#
 public class User : Aggregate<Error>,
                     IAsyncCommandExecutor<SignupUser, Error>,
