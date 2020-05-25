@@ -41,7 +41,7 @@ namespace Leira.EventSourcing.Abstracts
 
         public async Task<CommandResult<TError>> ExecuteAsync<TCommand>(TCommand command) where TCommand : Command
         {
-            if (this is IAsyncCommandExecutor<TCommand, TError> commandExecutor)
+            if (this is IAsyncCommandExecutor<TCommand, TError> || this is ICommandExecutor<TCommand, TError>)
             {
                 await RehydrateAsync().ConfigureAwait(false);
 
@@ -62,7 +62,16 @@ namespace Leira.EventSourcing.Abstracts
                     command.AggregateVersionWhenExecuted = LastAppliedEventNumber;
                 }
 
-                var result = await commandExecutor.ExecuteCommandAsync(command).ConfigureAwait(false);
+
+                CommandResult<TError> result = null;
+                if (this is IAsyncCommandExecutor<TCommand, TError> asyncCommandExecutor)
+                {
+                    result = await asyncCommandExecutor.ExecuteCommandAsync(command).ConfigureAwait(false);
+                }
+                else if (this is ICommandExecutor<TCommand, TError> commandExecutor)
+                {
+                    result = commandExecutor.ExecuteCommand(command);
+                }
 
                 // Persist Events
                 List<Event> appliedEvents = new List<Event>();
@@ -169,14 +178,19 @@ namespace Leira.EventSourcing.Abstracts
         {
             if (!@event.IsReversed)
             {
-                if (this is IAsyncEventHandler<TEvent> eventHandler)
+                if (this is IAsyncEventHandler<TEvent> asyncEventHandler)
                 {
-                    await eventHandler.ApplyEventAsync(@event).ConfigureAwait(false);
+                    await asyncEventHandler.ApplyEventAsync(@event).ConfigureAwait(false);
+                    LastAppliedEventNumber = @event.SequenceNumber;
+                }
+                else if (this is IEventHandler<TEvent> eventHandler)
+                {
+                    eventHandler.ApplyEvent(@event);
                     LastAppliedEventNumber = @event.SequenceNumber;
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Aggregate does not implment IAsyncEventHandler<{typeof(TEvent).Name}>");
+                    throw new InvalidOperationException($"Aggregate does not implment IAsyncEventHandler<{typeof(TEvent).Name}> nor IEventHandler<{typeof(TEvent).Name}>");
                 }
             }
             else

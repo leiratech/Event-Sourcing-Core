@@ -5,7 +5,7 @@
     <RootNamespace>Leira.EventSourcing</RootNamespace>
     <AssemblyName>EventSourcing</AssemblyName>
     <PackageId>Leira.EventSourcing</PackageId>
-    <Version>1.0.3.0</Version>
+    <Version>1.0.4.0</Version>
     <Authors>Adel Alzubeir</Authors>
     <Company>LEİRA BİLİŞİM TİCARET LİMİTED ŞİRKETİ</Company>
     <Product>Leira.EventSourcing</Product>

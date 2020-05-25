@@ -6,4 +6,9 @@ namespace Leira.EventSourcing.Interfaces
     {
         public Task<CommandResult<TError>> ExecuteCommandAsync(TCommand command);
     }
+
+    public interface ICommandExecutor<TCommand, TError>
+    {
+        public CommandResult<TError> ExecuteCommand(TCommand command);
+    }
 }

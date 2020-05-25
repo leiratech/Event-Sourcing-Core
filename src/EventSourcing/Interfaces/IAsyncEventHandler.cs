@@ -7,4 +7,9 @@ namespace Leira.EventSourcing.Interfaces
     {
         public Task ApplyEventAsync(TEvent @event);
     }
+
+    public interface IEventHandler<TEvent> where TEvent : Event
+    {
+        public void ApplyEvent(TEvent @event);
+    }
 }
